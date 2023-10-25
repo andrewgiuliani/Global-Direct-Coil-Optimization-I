@@ -24,7 +24,7 @@
 	url = ./pyQSC/
 [submodule "simsopt"]
 	path = simsopt
-	url = ./simsopt/
+	url = git@github.com:hiddenSymmetries/simsopt.git
 [submodule "LinkingNumber"]
 	path = LinkingNumber
 	url = git@github.com:andrewgiuliani/LinkingNumber.git
