@@ -16,9 +16,6 @@
 [submodule "xsimd"]
 	path = xsimd
 	url = https://github.com/xtensor-stack/xsimd.git
-[submodule "LinkingNumber"]
-	path = LinkingNumber
-	url = ./LinkingNumber/
 [submodule "TuRBO"]
 	path = TuRBO
 	url = ./TuRBO/
