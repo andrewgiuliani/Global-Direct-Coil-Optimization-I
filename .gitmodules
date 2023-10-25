@@ -25,3 +25,6 @@
 [submodule "simsopt"]
 	path = simsopt
 	url = ./simsopt/
+[submodule "LinkingNumber"]
+	path = LinkingNumber
+	url = git@github.com:andrewgiuliani/LinkingNumber.git
