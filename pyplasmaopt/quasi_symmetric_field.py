@@ -17,6 +17,8 @@ class QuasiSymmetricField(PropertyManager):
         self.magnetic_axis = magnetic_axis
         self.n = len(magnetic_axis.points)
         self.__state = np.zeros((self.n+1,))
+        self.__state_backup = self.__state.copy()
+        
         import scipy
         n = self.n
         points = self.magnetic_axis.points.reshape((n, 1))
@@ -320,37 +322,30 @@ class QuasiSymmetricField(PropertyManager):
             jacobian[:n, n] = ((self.eta_bar/kappa)**4 + 1 + sigma**2)
             jacobian[-1, 0] = 1
             return jacobian
-
-        # x = np.random.rand(*self.__state.shape)
-        # jac = build_jacobian(x)
-        # jac_est = np.zeros(jac.shape)
-        # f0 = build_residual(x)
-        # eps = 1e-4
-        # for i in range(self.n+1):
-        #     x[i] += eps
-        #     fx = build_residual(x)
-        #     x[i] -= 2*eps
-        #     fy = build_residual(x)
-        #     x[i] += eps
-        #     jac_est[:, i] = (fx-fy)/(2*eps)
-        # np.set_printoptions(linewidth=1000, precision=4)
-        # print( "Jac - Jac_Est", np.linalg.norm(jac-jac_est))
-        if np.linalg.norm(self.__state) < 1e-13:
-            # info("First solve: use fsolve")
-            soln = fsolve(build_residual, self.__state, fprime=build_jacobian, xtol=1e-13)
-        else:
-            diff = 1
-            soln = self.__state.copy()
-            count = 0
-            while diff > 1e-13:
-                update = np.linalg.solve(build_jacobian(soln), build_residual(soln))
-                soln -= update
-                diff = np.linalg.norm(update)
-                count += 1
-                if count > 10:
-                    # warning("Newton failed: use fsolve")
-                    soln = fsolve(build_residual, self.__state, fprime=build_jacobian, xtol=1e-13)
-                    break
+        
+        # solve for sigma on axis
+        #soln, infodict, ier, msg = fsolve(build_residual, self.__state, fprime=build_jacobian, xtol=1e-13, full_output=True)
+        #if ier != 1:
+        #    import ipdb;ipdb.set_trace()
+        
+        self.sigma_success = True
+        diff = 1
+        soln = self.__state_backup.copy()
+        count = 0
+        while diff > 1e-13:
+            update = np.linalg.solve(build_jacobian(soln), build_residual(soln))
+            soln -= update
+            diff = np.linalg.norm(update)
+            count += 1
+            if count > 10:
+                print("Newton failed: use fsolve", flush=True)
+                self.__state[:] = self.__state_backup.copy()
+                soln, infodict, ier, msg  = fsolve(build_residual, self.__state, fprime=build_jacobian, xtol=1e-13, full_output=True)
+                if ier != 1:
+                    print("WARNING FSOLVE DID NOT CONVERGE " + msg, flush=True)
+                    soln[:] = self.__state_backup.copy()
+                    self.sigma_success = False
+                break
 
         self.__state[:] = soln[:]
         sigma = self.__state[:-1].copy()

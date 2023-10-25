@@ -24,22 +24,25 @@ set_target_properties(${PROJECT_NAME}
     PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED ON)
+
+target_include_directories(${PROJECT_NAME} PRIVATE "LinkingNumber/toolbox/src/")
+target_link_directories(${PROJECT_NAME} PRIVATE "LinkingNumber/build/")
+target_link_libraries(${PROJECT_NAME} PRIVATE LinkingNumber_linux)
 target_include_directories(${PROJECT_NAME} PRIVATE "xtensor/include" "xtensor-python/include" "xsimd/include" "xtl/include" "blaze" "cppplasmaopt" ${NUMPY_INCLUDE_DIRS})
 
-
-add_executable(profiling_biot_savart profiling/profile_biot_savart.cpp cppplasmaopt/biot_savart_all.cpp
-    cppplasmaopt/biot_savart_B.cpp cppplasmaopt/biot_savart_dB_by_dX.cpp cppplasmaopt/biot_savart_d2B_by_dXdX.cpp)
-set_target_properties(profiling_biot_savart
-    PROPERTIES
-    CXX_STANDARD 17
-    CXX_STANDARD_REQUIRED ON)
-target_include_directories(profiling_biot_savart PRIVATE  "xtensor/include" "xtensor-python/include" "xsimd/include" "xtl/include" "blaze" "cppplasmaopt" ${PYBIND11_INCLUDE_DIR} ${NUMPY_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIR})
-target_link_libraries(profiling_biot_savart PUBLIC ${PYTHON_LIBRARY})
+#add_executable(profiling_biot_savart profiling/profile_biot_savart.cpp cppplasmaopt/biot_savart_all.cpp
+#    cppplasmaopt/biot_savart_B.cpp cppplasmaopt/biot_savart_dB_by_dX.cpp cppplasmaopt/biot_savart_d2B_by_dXdX.cpp)
+#set_target_properties(profiling_biot_savart
+#    PROPERTIES
+#    CXX_STANDARD 17
+#    CXX_STANDARD_REQUIRED ON)
+#target_include_directories(profiling_biot_savart PRIVATE  "xtensor/include" "xtensor-python/include" "xsimd/include" "xtl/include" "blaze" "cppplasmaopt" ${PYBIND11_INCLUDE_DIR} ${NUMPY_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIR})
+#target_link_libraries(profiling_biot_savart PUBLIC ${PYTHON_LIBRARY})
 
 
 if(OpenMP_CXX_FOUND)
     target_link_libraries(${PROJECT_NAME} PRIVATE OpenMP::OpenMP_CXX)
-    target_link_libraries(profiling_biot_savart PRIVATE OpenMP::OpenMP_CXX)
+    #    target_link_libraries(profiling_biot_savart PRIVATE OpenMP::OpenMP_CXX)
 endif()
 
 #get_cmake_property(_variableNames VARIABLES)

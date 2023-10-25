@@ -16,3 +16,15 @@
 [submodule "xsimd"]
 	path = xsimd
 	url = https://github.com/xtensor-stack/xsimd.git
+[submodule "LinkingNumber"]
+	path = LinkingNumber
+	url = ./LinkingNumber/
+[submodule "TuRBO"]
+	path = TuRBO
+	url = ./TuRBO/
+[submodule "pyQSC"]
+	path = pyQSC
+	url = ./pyQSC/
+[submodule "simsopt"]
+	path = simsopt
+	url = ./simsopt/

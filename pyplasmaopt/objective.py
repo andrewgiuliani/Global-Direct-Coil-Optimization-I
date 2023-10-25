@@ -271,16 +271,12 @@ class CurveLength():
 class CurveCurvature():
 
     r"""
-    J = \int_{curve} \kappa ds
+    J = \int_{curve} max(\kappa-desired_kappa, 0)^2 ds
     """
 
-    def __init__(self, curve, desired_length=None, p=2, root=False):
+    def __init__(self, curve, desired_kappa=None, p=2, root=False):
         self.curve = curve
-        if desired_length is None:
-            self.desired_kappa = 0
-        else:
-            radius = desired_length/(2*pi)
-            self.desired_kappa = 1/radius
+        self.desired_kappa = desired_kappa
         self.p = p
         self.root = root
 
@@ -309,6 +305,49 @@ class CurveCurvature():
             if self.root:
                 res[i] *= (1./p) * np.mean(np.maximum(kappa-self.desired_kappa, 0)**p * arc_length)**(1./p-1)
         return res
+
+
+class MeanSquaredCurveCurvature():
+
+    r"""
+    J = \int_{curve} \kappa ds
+    """
+
+    def __init__(self, curve, p=2, root=False):
+        self.curve = curve
+        self.root = root
+
+    def J(self):
+        arc_length = np.linalg.norm(self.curve.dgamma_by_dphi[:,0,:], axis=1)
+        kappa = self.curve.kappa[:, 0]
+        return np.mean(kappa**2 * arc_length) / np.mean(arc_length)
+
+    def dJ_by_dcoefficients(self):
+        kappa                 = self.curve.kappa[:,0]
+        dkappa_by_dcoeff      = self.curve.dkappa_by_dcoeff[:,:,0]
+        dgamma_by_dphi        = self.curve.dgamma_by_dphi[:,0,:]
+        d2gamma_by_dphidcoeff = self.curve.d2gamma_by_dphidcoeff[:, 0, :, :]
+        arc_length            = np.linalg.norm(dgamma_by_dphi, axis=1)
+        
+        num = np.mean(kappa**2 * arc_length)
+        denom = np.mean(arc_length)
+
+        num_coeff = d2gamma_by_dphidcoeff.shape[1]
+        res_num       = np.zeros((num_coeff, ))
+        for i in range(num_coeff):
+            res_num[i]  = np.mean((kappa**2/arc_length) * np.sum(d2gamma_by_dphidcoeff[:, i, :] * dgamma_by_dphi, axis  = 1))
+            res_num[i] += np.mean(2*kappa * dkappa_by_dcoeff[:,i] * arc_length)
+
+        dgamma_by_dphi        = self.curve.dgamma_by_dphi[:,0,:]
+        d2gamma_by_dphidcoeff = self.curve.d2gamma_by_dphidcoeff[:, 0, :, :]
+        num_coeff = d2gamma_by_dphidcoeff.shape[1]
+        res_denom = np.zeros((num_coeff, ))
+        arc_length = np.linalg.norm(dgamma_by_dphi, axis=1)
+        for i in range(num_coeff):
+            res_denom[i] = np.mean((1/arc_length) * np.sum(d2gamma_by_dphidcoeff[:, i, :] * dgamma_by_dphi, axis=1))
+        return (res_num * denom - res_denom * num) / denom**2
+
+
 
 
 class CurveTorsion():
@@ -404,24 +443,179 @@ class SobolevTikhonov():
 
 class UniformArclength():
 
-    def __init__(self, curve, desired_length):
+    def __init__(self, curve):
         self.curve = curve
-        self.desired_arclength = desired_length
 
     def J(self):
         num_points = self.curve.gamma.shape[0]
-        return np.sum((self.curve.incremental_arclength-self.desired_arclength)**2)/num_points
+        mean_arc = np.mean(self.curve.incremental_arclength)
+        return np.sum((self.curve.incremental_arclength-mean_arc)**2)/num_points
 
     def dJ_by_dcoefficients(self):
         num_points = self.curve.gamma.shape[0]
         num_coeff = self.curve.dgamma_by_dcoeff.shape[1]
         res = np.zeros((num_coeff, ))
+        mean_arc = np.mean(self.curve.incremental_arclength)
         for i in range(num_coeff):
+            mean_arc_dcoeff = np.mean(self.curve.dincremental_arclength_by_dcoeff[:, i, :], axis=0)
             res[i] = np.sum(
-                2 * (self.curve.incremental_arclength-self.desired_arclength)
-                * self.curve.dincremental_arclength_by_dcoeff[:, i, :]
+                2 * (self.curve.incremental_arclength-mean_arc)
+                * (self.curve.dincremental_arclength_by_dcoeff[:, i, :] - mean_arc_dcoeff)
             )/num_points
         return res
+
+
+
+
+#class MinimumDistance_ma():
+#
+#    def __init__(self, curves, ma,  minimum_distance_c, minimum_distance_a):
+#        self.curves = curves + [ma]
+#        self.minimum_distance_c = minimum_distance_c
+#        self.minimum_distance_a = minimum_distance_a
+#
+#    def min_dist_axis(self):
+#        res = 1e10
+#
+#        gamma1 = self.curves[-1].gamma
+#        for j in range(len(self.curves)-1):
+#            gamma2 = self.curves[j].gamma
+#            dists = np.sqrt(np.sum((gamma1[:, None, :] - gamma2[None, :, :])**2, axis=2))
+#            res = min(res, np.min(dists))
+#        return res
+#
+#    def min_dist_coils(self):
+#        res = 1e10
+#        for i in range(len(self.curves)-1):
+#            gamma1 = self.curves[i].gamma
+#            for j in range(i):
+#                gamma2 = self.curves[j].gamma
+#                dists = np.sqrt(np.sum((gamma1[:, None, :] - gamma2[None, :, :])**2, axis=2))
+#                res = min(res, np.min(dists))
+#        return res
+#
+#    def J(self):
+#        from scipy.spatial.distance import cdist
+#        res = 0
+#        for i in range(len(self.curves)):
+#            gamma1 = self.curves[i].gamma
+#            min_dist = self.minimum_distance_c if i < len(self.curves)-1 else self.minimum_distance_a
+#
+#            for j in range(i):
+#                gamma2 = self.curves[j].gamma
+#                dists = np.sqrt(np.sum((gamma1[:, None, :] - gamma2[None, :, :])**2, axis=2))
+#                res += np.sum(np.maximum(min_dist-dists, 0)**2)/(gamma1.shape[0]*gamma2.shape[0])
+#        return res
+#
+#    def dJ_by_dcoefficients(self):
+#        res = []
+#        for i in range(len(self.curves)):
+#            gamma1 = self.curves[i].gamma
+#            dgamma1 = self.curves[i].dgamma_by_dcoeff
+#            numcoeff1 = self.curves[i].dgamma_by_dcoeff.shape[1]
+#            res.append(np.zeros((numcoeff1, )))
+#            min_dist = self.minimum_distance_c if i < len(self.curves)-1 else self.minimum_distance_a
+#            
+#            for j in range(i):
+#                gamma2 = self.curves[j].gamma
+#                dgamma2 = self.curves[j].dgamma_by_dcoeff
+#                numcoeff2 = self.curves[j].dgamma_by_dcoeff.shape[1]
+#                diffs = gamma1[:, None, :] - gamma2[None, :, :]
+#
+#                dists = np.sqrt(np.sum(diffs**2, axis=2))
+#                if np.sum(np.maximum(min_dist - dists, 0)) < 1e-15:
+#                    continue
+#
+#                for ii in range(numcoeff1):
+#                    res[i][ii] += np.sum(-2 * np.maximum(min_dist - dists, 0) * np.sum(dgamma1[:, ii, :][:, None, :] * diffs, axis=2)/dists)/(gamma1.shape[0]*gamma2.shape[0])
+#                for jj in range(numcoeff2):
+#                    res[j][jj] -= np.sum(-2 * np.maximum(min_dist - dists, 0) * np.sum(dgamma2[:, jj, :][None, :, :] * diffs, axis=2)/dists)/(gamma1.shape[0]*gamma2.shape[0])
+#
+#        res_coils = res[:-1]
+#        res_ma = np.array(res[-1])
+#        return res_coils, res_ma
+
+
+
+
+
+
+
+
+
+class MinimumDistance_ma():
+
+    def __init__(self, curves, ma,  minimum_distance):
+        self.curves = curves + [ma]
+        self.minimum_distance = minimum_distance
+
+    def min_dist(self):
+        res = 1e10
+        for i in range(len(self.curves)):
+            gamma1 = self.curves[i].gamma
+            for j in range(i):
+                gamma2 = self.curves[j].gamma
+                dists = np.sqrt(np.sum((gamma1[:, None, :] - gamma2[None, :, :])**2, axis=2))
+                res = min(res, np.min(dists))
+        return res
+
+    def J(self):
+        from scipy.spatial.distance import cdist
+        res = 0
+        for i in range(len(self.curves)):
+            gamma1 = self.curves[i].gamma
+            for j in range(i):
+                gamma2 = self.curves[j].gamma
+                dists = np.sqrt(np.sum((gamma1[:, None, :] - gamma2[None, :, :])**2, axis=2))
+                res += np.sum(np.maximum(self.minimum_distance-dists, 0)**2)/(gamma1.shape[0]*gamma2.shape[0])
+        return res
+
+    def dJ_by_dcoefficients(self):
+        res = []
+        for i in range(len(self.curves)):
+            gamma1 = self.curves[i].gamma
+            dgamma1 = self.curves[i].dgamma_by_dcoeff
+            numcoeff1 = self.curves[i].dgamma_by_dcoeff.shape[1]
+            res.append(np.zeros((numcoeff1, )))
+            for j in range(i):
+                gamma2 = self.curves[j].gamma
+                dgamma2 = self.curves[j].dgamma_by_dcoeff
+                numcoeff2 = self.curves[j].dgamma_by_dcoeff.shape[1]
+                diffs = gamma1[:, None, :] - gamma2[None, :, :]
+
+                dists = np.sqrt(np.sum(diffs**2, axis=2))
+                if np.sum(np.maximum(self.minimum_distance - dists, 0)) < 1e-15:
+                    continue
+
+                for ii in range(numcoeff1):
+                    res[i][ii] += np.sum(-2 * np.maximum(self.minimum_distance - dists, 0) * np.sum(dgamma1[:, ii, :][:, None, :] * diffs, axis=2)/dists)/(gamma1.shape[0]*gamma2.shape[0])
+                for jj in range(numcoeff2):
+                    res[j][jj] -= np.sum(-2 * np.maximum(self.minimum_distance - dists, 0) * np.sum(dgamma2[:, jj, :][None, :, :] * diffs, axis=2)/dists)/(gamma1.shape[0]*gamma2.shape[0])
+
+        res_coils = res[:-1]
+        res_ma = np.array(res[-1])
+        return res_coils, res_ma
+
+    def min_dist_axis(self):
+        res = 1e10
+
+        gamma1 = self.curves[-1].gamma
+        for j in range(len(self.curves)-1):
+            gamma2 = self.curves[j].gamma
+            dists = np.sqrt(np.sum((gamma1[:, None, :] - gamma2[None, :, :])**2, axis=2))
+            res = min(res, np.min(dists))
+        return res
+
+    def min_dist_coils(self):
+        res = 1e10
+        for i in range(len(self.curves)-1):
+            gamma1 = self.curves[i].gamma
+            for j in range(i):
+                gamma2 = self.curves[j].gamma
+                dists = np.sqrt(np.sum((gamma1[:, None, :] - gamma2[None, :, :])**2, axis=2))
+                res = min(res, np.min(dists))
+        return res
+
 
 
 class MinimumDistance():

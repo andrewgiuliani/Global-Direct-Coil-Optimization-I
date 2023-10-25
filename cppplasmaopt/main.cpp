@@ -6,6 +6,9 @@
 
 #include "biot_savart.h"
 
+#include "linking_number.hh"
+typedef LK::LinkingNumber<double> LK_class;
+
 int add(int i, int j) {
     return i + j;
 }
@@ -30,6 +33,28 @@ PYBIND11_MODULE(cppplasmaopt, m) {
 
     m.def("biot_savart_dB_by_dcoilcoeff",    & biot_savart_dB_by_dcoilcoeff);
     m.def("biot_savart_d2B_by_dXdcoilcoeff", & biot_savart_d2B_by_dXdcoilcoeff);
+
+    m.def("ln", [](Array& A, Array& B) {
+            LK_class lk(2);
+            int nseg1 = A.shape(0);
+            int nseg2 = B.shape(0);
+            
+            double c1[10000][3];
+            double c2[10000][3];
+            for(int i; i < nseg1; i++){
+                c1[i][0] = A(i, 0);
+                c1[i][1] = A(i, 1);
+                c1[i][2] = A(i, 2);
+            }
+    
+            for(int i; i < nseg2; i++){
+                c2[i][0] = B(i, 0);
+                c2[i][1] = B(i, 1);
+                c2[i][2] = B(i, 2);
+            }
+    
+            return lk.eval(c1, nseg1, c2, nseg2) ;
+        });
 
 #ifdef VERSION_INFO
     m.attr("__version__") = VERSION_INFO;

@@ -283,7 +283,7 @@ class Curve():
         dgamma_by_dphi = self.dgamma_by_dphi[:,0,:]
         if ax is None:
             fig = plt.figure()
-            ax = fig.gca(projection='3d')
+            ax = fig.add_subplot(projection='3d')
         def rep(data):
             if closed_loop:
                 return np.concatenate((data, [data[0]]))
