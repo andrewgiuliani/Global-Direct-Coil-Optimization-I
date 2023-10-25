@@ -18,7 +18,7 @@
 	url = https://github.com/xtensor-stack/xsimd.git
 [submodule "TuRBO"]
 	path = TuRBO
-	url = ./TuRBO/
+	url = git@github.com:andrewgiuliani/TuRBO.git
 [submodule "pyQSC"]
 	path = pyQSC
 	url = ./pyQSC/
