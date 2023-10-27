@@ -21,7 +21,9 @@ To use this code, first clone the repository including all its submodules, via
 ## Running the scripts
 
 To run the near-axis optimization with TuRBO globalization:
+
     ./ex_TuRBO.py arguments.txt
 
 with naive globalization (perturbing the initial guess with Gaussian noise):
+
     ./ex_naive.py arguments.txt
