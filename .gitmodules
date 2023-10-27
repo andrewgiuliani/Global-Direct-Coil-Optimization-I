@@ -1,30 +1,30 @@
 [submodule "pybind11"]
-    path = pybind11
+	path = PyPlasmaOpt/pybind11
     url  = https://github.com/pybind/pybind11.git
 [submodule "blaze"]
-    path = blaze
+	path = PyPlasmaOpt/blaze
     url  = https://bitbucket.org/blaze-lib/blaze.git
 [submodule "xtensor-python"]
-    path = xtensor-python
+	path = PyPlasmaOpt/xtensor-python
     url  = https://github.com/xtensor-stack/xtensor-python.git
 [submodule "xtensor"]
-    path = xtensor
+	path = PyPlasmaOpt/xtensor
     url  = https://github.com/xtensor-stack/xtensor.git
 [submodule "xtl"]
-    path = xtl
+	path = PyPlasmaOpt/xtl
     url  = https://github.com/xtensor-stack/xtl.git
 [submodule "xsimd"]
-	path = xsimd
+	path = PyPlasmaOpt/xsimd
 	url = https://github.com/xtensor-stack/xsimd.git
 [submodule "TuRBO"]
-	path = TuRBO
+	path = PyPlasmaOpt/TuRBO
 	url = git@github.com:andrewgiuliani/TuRBO.git
 [submodule "pyQSC"]
 	path = pyQSC
 	url = ./pyQSC/
 [submodule "simsopt"]
-	path = simsopt
+	path = PyPlasmaOpt/simsopt
 	url = git@github.com:hiddenSymmetries/simsopt.git
 [submodule "LinkingNumber"]
-	path = LinkingNumber
+	path = PyPlasmaOpt/LinkingNumber
 	url = git@github.com:andrewgiuliani/LinkingNumber.git
