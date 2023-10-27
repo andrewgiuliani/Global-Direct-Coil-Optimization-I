@@ -38,7 +38,7 @@ lines = shlex.split(lines[0])
 args = parser.parse_args(lines)
 
 
-outdir = f"/mnt/home/agiuliani/ceph/parameter_scan/publication_runs/l2g/sector/outputs/output-{args.id}/"
+outdir = f"./output/"
 os.makedirs(outdir, exist_ok=True)
 
 etabar = args.etabar_init
