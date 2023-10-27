@@ -1,7 +1,7 @@
 # Direct stellarator coil design using global optimization: application to a comprehensive exploration of quasi-axisymmetric devices
 The examples directory contain scripts for executing phase I of the workflow in
 
-A. Giuliani, *Direct stellarator coil design using global optimization: application to a comprehensive exploration of quasi-axisymmetric devices*, Arxiv
+*Direct stellarator coil design using global optimization: application to a comprehensive exploration of quasi-axisymmetric devices*, A. Giuliani, Arxiv
 
 ## Background
 The paper
@@ -21,7 +21,7 @@ To use this code, first clone the repository including all its submodules, via
 ## Running the scripts
 
 To run the near-axis optimization with TuRBO globalization:
-./ex_TuRBO.py arguments.txt
+    ./ex_TuRBO.py arguments.txt
 
 with naive globalization (perturbing the initial guess with Gaussian noise):
-./ex_naive.py arguments.txt
+    ./ex_naive.py arguments.txt
