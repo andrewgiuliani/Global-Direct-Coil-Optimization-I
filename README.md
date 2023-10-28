@@ -16,9 +16,11 @@ To use this code, first clone the repository including all its submodules, via
 
     git clone --recursive 
 
-Next, to install simsopt,
+Next, best practice is to generate a virtual environment and install PyPlasmaOpt there
 
     cd simsopt
+    python -m venv venv
+    source venv/bin/activate
     pip install -e .
 
 ## Running the scripts
