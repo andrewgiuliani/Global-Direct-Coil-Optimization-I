@@ -1,0 +1,12 @@
+[submodule "PyPlasmaOpt/LinkingNumber"]
+	path = PyPlasmaOpt/LinkingNumber
+	url = git@github.com:andrewgiuliani/LinkingNumber.git
+[submodule "PyPlasmaOpt/pybind11"]
+	path = PyPlasmaOpt/pybind11
+	url = https://github.com/pybind/pybind11
+[submodule "PyPlasmaOpt/TuRBO"]
+	path = PyPlasmaOpt/TuRBO
+	url = https://github.com/andrewgiuliani/TuRBO
+[submodule "PyPlasmaOpt/xsimd"]
+	path = PyPlasmaOpt/xsimd
+	url = https://github.com/xtensor-stack/xsimd
