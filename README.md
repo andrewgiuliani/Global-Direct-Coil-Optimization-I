@@ -18,7 +18,7 @@ To use this code, first clone the repository including all its submodules, via
 
 Next, best practice is to generate a virtual environment and install PyPlasmaOpt there
 
-    cd simsopt
+    cd PyPlasmaOpt
     python -m venv venv
     source venv/bin/activate
     pip install -e .
