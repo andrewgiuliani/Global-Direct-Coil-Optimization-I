@@ -22,6 +22,7 @@ Next, best practice is to generate a virtual environment and install PyPlasmaOpt
     python -m venv venv
     source venv/bin/activate
     cd LinkingNumber; mkdir build; cd build; cmake ..; make; cd ../../
+    cd TuRBO; pip install -e .; cd ..
     pip install -e .
 
 ## Running the scripts
