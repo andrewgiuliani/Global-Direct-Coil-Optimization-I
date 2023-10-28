@@ -1,9 +1,6 @@
 [submodule "pybind11"]
 	path = PyPlasmaOpt/pybind11
     url  = https://github.com/pybind/pybind11.git
-[submodule "blaze"]
-	path = PyPlasmaOpt/blaze
-    url  = https://bitbucket.org/blaze-lib/blaze.git
 [submodule "xtensor-python"]
 	path = PyPlasmaOpt/xtensor-python
     url  = https://github.com/xtensor-stack/xtensor-python.git

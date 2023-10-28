@@ -24,4 +24,4 @@
 	url = https://github.com/xtensor-stack/xtl/
 [submodule "PyPlasmaOpt/blaze"]
 	path = PyPlasmaOpt/blaze
-	url = https://github.com/blaze/blaze
+	url = https://bitbucket.org/blaze-lib/blaze.git
