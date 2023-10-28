@@ -16,6 +16,10 @@ To use this code, first clone the repository including all its submodules, via
 
     git clone --recursive 
 
+Next, to install simsopt,
+
+    cd simsopt
+    pip install -e .
 
 ## Running the scripts
 
