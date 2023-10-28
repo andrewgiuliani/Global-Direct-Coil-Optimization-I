@@ -10,3 +10,15 @@
 [submodule "PyPlasmaOpt/xsimd"]
 	path = PyPlasmaOpt/xsimd
 	url = https://github.com/xtensor-stack/xsimd
+[submodule "PyPlasmaOpt/simsopt"]
+	path = PyPlasmaOpt/simsopt
+	url = https://github.com/hiddenSymmetries/simsopt
+[submodule "PyPlasmaOpt/xtensor"]
+	path = PyPlasmaOpt/xtensor
+	url = https://github.com/xtensor-stack/xtensor/
+[submodule "PyPlasmaOpt/xtensor-python"]
+	path = PyPlasmaOpt/xtensor-python
+	url = https://github.com/xtensor-stack/xtensor-python
+[submodule "PyPlasmaOpt/xtl"]
+	path = PyPlasmaOpt/xtl
+	url = https://github.com/xtensor-stack/xtl/
